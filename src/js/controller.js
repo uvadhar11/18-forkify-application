@@ -2,7 +2,6 @@ import * as model from './model.js'; // imports everything in the model js file 
 import recipeView from './views/recipeView.js';
 import 'core-js/stable'; // don't need to save it anywhere, for plyfilling everything else (regenerator runtime does async/await)
 import 'regenerator-runtime/runtime'; // polyfilling async/await
-console.log(icons);
 const recipeContainer = document.querySelector('.recipe');
 
 const timeout = function (s) {
@@ -29,7 +28,8 @@ const controlRecipes = async function () {
     // if no id, then return so there is no error - guard clause
     if (!id) return;
     // rendering the spinner so when it isn't loading, the spinner will be there.
-    renderSpinner(recipeContainer); // calling the spinner function. This disappears when the content is loaded because this goes into the recipe container element, then when the content is loaded, that SAME container is emptied and the new code with the content is added to the same container, resulting in the spinner being gone.
+    recipeView.renderSpinner(); // calling the spinner function. This disappears when the content is loaded because this goes into the recipe container element, then when the content is loaded, that SAME container is emptied and the new code with the content is added to the same container, resulting in the spinner being gone.
+    // WHY IT WORKS: Calling render spinner on recipe view works because the function uses the paretntElement variable that stores this.
 
     // 1) Loading recipe
     // await will block the execution inside this async function. Becuase this is inside an async function, its not going to block the entire execution of the script.
