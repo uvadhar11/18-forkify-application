@@ -1,3 +1,7 @@
+// import icons from '../img/icons.svg'; // Parcel 1 - how this works in parcel 1 for importing the icons (.. is to go up one level)
+import icons from 'url:../img/icons.svg'; // for static assets (non programming files like video, img, sound) we need to add url:PATH
+// need to import images since when the build is done, the image reference in the html goes to a different area and not the one in the dist folder. So see imports and comments above.
+
 // view is going to be a class because we are going to have a parent class called view that all views should inherit - easy to implement this with inheritance. We want some private properties for the views as well which classes will help us with.
 class RecipeView {
   // storing the parent element from the DOM inside this parentElement instance variable.

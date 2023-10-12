@@ -1,9 +1,5 @@
 import * as model from './model.js'; // imports everything in the model js file as an object called model
 import recipeView from './views/recipeView.js';
-
-// import icons from '../img/icons.svg'; // Parcel 1 - how this works in parcel 1 for importing the icons (.. is to go up one level)
-import icons from 'url:../img/icons.svg'; // for static assets (non programming files like video, img, sound) we need to add url:PATH
-// need to import images since when the build is done, the image reference in the html goes to a different area and not the one in the dist folder. So see imports and comments above.
 import 'core-js/stable'; // don't need to save it anywhere, for plyfilling everything else (regenerator runtime does async/await)
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 console.log(icons);
@@ -23,7 +19,7 @@ const timeout = function (s) {
 
 ///////////////////////////////////////
 // npm init - makes our package.json file
-const controlRecipcontrolRecipes = async function () {
+const controlRecipes = async function () {
   try {
     // getting hash from url - now we can load id based on the url
     const id = window.location.hash.slice(1); // cut the hash (first character) from id
@@ -70,5 +66,5 @@ controlRecipes();
 // view - interacts with user/presentation logic
 // model - business logic, state, http library like data from web/backend
 // controller - application logic/router, connects view and model since view and model should exist completely independent from each other.
-// a goal of this model is to seperate business and presetnation logic so we need this controller to connect them both.
+// a goal of this model is to seperate business and presentation logic so we need this controller to connect them both.
 // controller handles ui events and dispatches tasks to model and view. GETS UI EVENTS AS WELL.
