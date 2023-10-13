@@ -4,14 +4,6 @@ import 'core-js/stable'; // don't need to save it anywhere, for plyfilling every
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 const recipeContainer = document.querySelector('.recipe');
 
-const timeout = function (s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
-    }, s * 1000);
-  });
-};
-
 // https://forkify-api.herokuapp.com/v2
 
 // polyfilling for old code: npm i core-js regenerator-runtime (installs 2 packages at the same time). Remember to import at the top of the file.
@@ -36,14 +28,13 @@ const controlRecipes = async function () {
     await model.loadRecipe(id); // calling the load recipe function from model.js. ASYNC FUNCTION SO RETURNS A PROMISE.
 
     // 2) Rendering recipe, from the data we got before
-    recipeView.render(model.state.recipe); // render method from recipeView.js. We are passing in the recipe from the state object in model.js. This is the recipe object we got from the api. Popular nae=me for methods.
+    recipeView.render(model.state.recipe); // render method from recipeView.js. We are passing in the recipe from the state object in model.js. This is the recipe object we got from the api. Popular name for methods.
     // also possible: const recipeView = new recipeView(model.state.recipe)
   } catch (err) {
     // when throw error in try, this stuff is executed so the alert will happen with the err from try block since throwing an error.
     alert(err);
   }
 };
-controlRecipes();
 
 // event listener for hash in url changing
 // window.addEventListener('hashchange', controlRecipes);
