@@ -42,11 +42,6 @@ const controlRecipes = async function () {
 // need to also add this event listener for when the page is loaded, so that the recipe is shown when the page is loaded since if u paste the url in a new tab, it won't load the recipe.
 // window.addEventListener('load', controlRecipes);
 
-// we have duplicated code so we can just put the events in an array and oop thru them since calling the same callback function
-['hashchange', 'load'].forEach(theEvent =>
-  window.addEventListener(theEvent, controlRecipes)
-);
-
 ///////////////////////////////////////
 // NOTES
 // MVC ARCHITECTURE
@@ -59,3 +54,14 @@ const controlRecipes = async function () {
 // controller - application logic/router, connects view and model since view and model should exist completely independent from each other.
 // a goal of this model is to seperate business and presentation logic so we need this controller to connect them both.
 // controller handles ui events and dispatches tasks to model and view. GETS UI EVENTS AS WELL.
+// for the callback handling - events should be handled in controller so application logic isn't in view, and events should be listened for in the view (since otherwise we need DOM elements in the controller). SO solution is publisher-subscriber design pattern.
+// Design pattern = way to solve problems like common problems
+// so in the publisher-subscriber pattern, we have a code that knows when to react (LISTENS) (publisher) like addHandlerRender in RecipeView and then subscriber is the code that reacts (HANDLES) which should be in controller.js
+// since controller js has view and model but in init, and we dont use it anywhere else, we can pass the function into addHandlerRender in recipe view. - addHandlerRender has no control because it has to call the input function given - which is what we want. Calling a function is different than calling an input function.
+// this updates every time something happens since the code has event listeners so they will auto update and be called when the event happens.
+
+// calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js.
+const init = function () {
+  recipeView.addHandlerRender(controlRecipes);
+};
+init();

@@ -43,6 +43,16 @@ class RecipeView {
     this.#parentElement.insertAdjacentHTML('afterbegin', markup);
   };
 
+  // needs to be part of public api so we can call this in the controller. This function is called in init and then whenever the events happen, they will be called because this is in an event listener so since we run it once, itll be good.
+  addHandlerRender(handler) {
+    // handler function is the input function for the handler when the event happens.
+
+    // we have duplicated code so we can just put the events in an array and oop thru them since calling the same callback function
+    ['hashchange', 'load'].forEach(theEvent =>
+      window.addEventListener(theEvent, handler)
+    );
+  }
+
   // private method since render will be common for all the classes, the HTML will be different so we need a function to generate that.
   #generateMarkup() {
     return `
