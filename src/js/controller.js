@@ -32,7 +32,8 @@ const controlRecipes = async function () {
     // also possible: const recipeView = new recipeView(model.state.recipe)
   } catch (err) {
     // when throw error in try, this stuff is executed so the alert will happen with the err from try block since throwing an error.
-    alert(err);
+    // alert(err);
+    recipeView.renderError(`${err}`)
   }
 };
 

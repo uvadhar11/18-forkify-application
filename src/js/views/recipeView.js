@@ -8,6 +8,7 @@ class RecipeView {
   // storing the parent element from the DOM inside this parentElement instance variable.
   #parentElement = document.querySelector('.recipe');
   #data; // instance variable for the data.
+  #errorMessage = "We could not find that recipe. Please try another one.";
 
   // part of the public api, we can pass data into this method since we don't have a constructor.
   render(data) {
@@ -39,9 +40,26 @@ class RecipeView {
       </svg>
     </div>
     `;
-    this.#parentElement.innerHTML = ''; // clear the parent element
+    this.#clear(); // clear the parent element
     this.#parentElement.insertAdjacentHTML('afterbegin', markup);
   };
+
+  // error rendering function
+  renderError(message = this.#errorMessage) {
+    // default error message if no message passed in
+    const markup = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${icons}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `
+    this.#clear(); // clear the parent element
+    this.#parentElement.insertAdjacentHTML('afterbegin', markup); // insert html into parent element
+  }
 
   // needs to be part of public api so we can call this in the controller. This function is called in init and then whenever the events happen, they will be called because this is in an event listener so since we run it once, itll be good.
   addHandlerRender(handler) {

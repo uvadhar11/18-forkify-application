@@ -30,5 +30,6 @@ export const loadRecipe = async function (id) {
   } catch (err) {
     // temp error handling
     console.error(`${err}💥💥💥💥`);
+    throw err; // need to throw the error to mark this promise as rejected since there are multiple async functions.
   }
 };
