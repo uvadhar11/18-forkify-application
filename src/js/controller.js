@@ -1,5 +1,6 @@
 import * as model from './model.js'; // imports everything in the model js file as an object called model
 import recipeView from './views/recipeView.js';
+import searchView from './views/searchView.js';
 import 'core-js/stable'; // don't need to save it anywhere, for plyfilling everything else (regenerator runtime does async/await)
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 const recipeContainer = document.querySelector('.recipe');
@@ -33,7 +34,7 @@ const controlRecipes = async function () {
   } catch (err) {
     // when throw error in try, this stuff is executed so the alert will happen with the err from try block since throwing an error.
     // alert(err);
-    recipeView.renderError(`${err}`)
+    recipeView.renderError(`${err}`);
   }
 };
 
@@ -61,8 +62,25 @@ const controlRecipes = async function () {
 // since controller js has view and model but in init, and we dont use it anywhere else, we can pass the function into addHandlerRender in recipe view. - addHandlerRender has no control because it has to call the input function given - which is what we want. Calling a function is different than calling an input function.
 // this updates every time something happens since the code has event listeners so they will auto update and be called when the event happens.
 
-// calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js.
+const controlSearchResults = async function () {
+  try {
+    // 1. Get Search Query
+    const query = searchView.getQuery();
+    if (!query) return; // guard clause if no query
+
+    // 2. Load Search Results
+    model.loadSearchResults('pizza');
+
+    // 3. Render Results
+    console.log(model.state.search.results);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  searchView.addHandlerSearch(controlSearchResults); // for the search
 };
 init();
