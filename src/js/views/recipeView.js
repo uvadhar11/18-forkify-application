@@ -8,7 +8,8 @@ class RecipeView {
   // storing the parent element from the DOM inside this parentElement instance variable.
   #parentElement = document.querySelector('.recipe');
   #data; // instance variable for the data.
-  #errorMessage = "We could not find that recipe. Please try another one.";
+  #errorMessage = 'We could not find that recipe. Please try another one.';
+  #message = '';
 
   // part of the public api, we can pass data into this method since we don't have a constructor.
   render(data) {
@@ -56,7 +57,24 @@ class RecipeView {
         </div>
         <p>${message}</p>
       </div>
-    `
+    `;
+    this.#clear(); // clear the parent element
+    this.#parentElement.insertAdjacentHTML('afterbegin', markup); // insert html into parent element
+  }
+
+  // message rendering function
+  // error rendering function
+  renderMessage(message = this.#message) {
+    const markup = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${icons}#icon-smile"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
     this.#clear(); // clear the parent element
     this.#parentElement.insertAdjacentHTML('afterbegin', markup); // insert html into parent element
   }
