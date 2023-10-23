@@ -7,6 +7,10 @@ export default class View {
 
   // part of the public api, we can pass data into this method since we don't have a constructor.
   render(data) {
+    // if no data or if data is an empty array, then render message. Guard clause here.
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.renderError(); // renders the error and we get the message in this.renderError automatically.
+
     // stores data we get from calling the render method in the controller into this._data
     this._data = data;
 
@@ -21,7 +25,7 @@ export default class View {
   }
 
   // private method to clear the parent element html - abstracting code into a method to make it cleaner in other methods.
-  #clear() {
+  _clear() {
     this._parentElement.innerHTML = '';
   }
 

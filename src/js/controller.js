@@ -2,6 +2,8 @@ import * as model from './model.js'; // imports everything in the model js file 
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
+import paginationView from './views/paginationView.js';
+
 import 'core-js/stable'; // don't need to save it anywhere, for plyfilling everything else (regenerator runtime does async/await)
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 const recipeContainer = document.querySelector('.recipe');
@@ -12,6 +14,12 @@ const recipeContainer = document.querySelector('.recipe');
 
 ///////////////////////////////////////
 // npm init - makes our package.json file
+
+// HOT POCKET MODULE WITH PARCEL TO PRESERVE THE STATE OF OUR APPLICATION ACROSS CHANGES (RELOADS) - not real JS, this is coming from parcel.
+// if (module.hot) {
+//   module.hot.accept();
+// }
+
 const controlRecipes = async function () {
   try {
     // getting hash from url - now we can load id based on the url
@@ -72,10 +80,15 @@ const controlSearchResults = async function () {
     if (!query) return; // guard clause if no query
 
     // 2. Load Search Results
-    model.loadSearchResults('pizza');
+    await model.loadSearchResults(query); // need to search the QUERY, so we pass it in and we want it to wait for the stuff to show up so we have an await (while loading, there is a spinner)
 
     // 3. Render Results
-    console.log(model.state.search.results);
+    // resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResultsPage());
+    // passing the data from the model state into the render function of the results view
+
+    // 4. Render Initial Pagination Buttons
+    paginationView.render(model.state.search);
   } catch (err) {
     console.log(err);
   }

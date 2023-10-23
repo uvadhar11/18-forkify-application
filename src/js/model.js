@@ -1,6 +1,6 @@
 // MODULE WHERE WE WRITE THE CODE FOR OUR ENTIRE MODEL
 // exporting state [object] so controller can use it. Live connection between exports and imports. When this state object gets updated by the load recipe function, it will be automatically updated in the controller because of the live connection between imports and exports.
-import { API_URL } from './config.js'; // importing the api url from config.js. Can import all with *
+import { API_URL, RESULTS_PER_PAGE } from './config.js'; // importing the api url from config.js. Can import all with *
 import { getJSON } from './helpers.js';
 
 export const state = {
@@ -8,6 +8,8 @@ export const state = {
   search: {
     query: '',
     results: [],
+    page: 1,
+    searchResultsPerPage: RESULTS_PER_PAGE, // number of search results that show up per page
   },
 };
 
@@ -58,4 +60,13 @@ export const loadSearchResults = async function (query) {
     throw err;
   }
 };
-loadSearchResults('pizza');
+
+// function for returning part of the search results data - we pass in a page number and return 10 results based on the page number. Ex page 1 -> return result 0-9 (array index), page 2-> 10-19, etc.
+export const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page; // storing the page argument into our state object so other files can access this.
+  // get start and end variable based on the page number passed in (default is state.search.page)
+  const start = (page - 1) * state.search.searchResultsPerPage; // page - 1 to get index then multiply it by number of results per page.
+  const end = page * state.search.searchResultsPerPage; // page number times 10. Not subtracting 1 because slice is exclusive on the last value (won't include 10, the last value will be 9).
+
+  return state.search.results.slice(start, end);
+};
