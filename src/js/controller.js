@@ -1,6 +1,7 @@
 import * as model from './model.js'; // imports everything in the model js file as an object called model
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
+import resultsView from './views/resultsView.js';
 import 'core-js/stable'; // don't need to save it anywhere, for plyfilling everything else (regenerator runtime does async/await)
 import 'regenerator-runtime/runtime'; // polyfilling async/await
 const recipeContainer = document.querySelector('.recipe');
@@ -64,6 +65,8 @@ const controlRecipes = async function () {
 
 const controlSearchResults = async function () {
   try {
+    resultsView.renderSpinner(); // render spinner works here because render spinner is a method on the parent View class (inheritance). Loading spinner for the results.
+
     // 1. Get Search Query
     const query = searchView.getQuery();
     if (!query) return; // guard clause if no query

@@ -2,5 +2,8 @@
 import View from './view';
 class ResultsView extends View {
   // parent element
-  _parentEl = document.querySelector('.results');
+  _parentElement = document.querySelector('.results');
 }
+
+export default new ResultsView();
+// exporting an instance object of this class makes it so that we don't have to manually make an instance variable when using this in other modules.
