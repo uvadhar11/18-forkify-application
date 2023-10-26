@@ -84,7 +84,7 @@ const controlSearchResults = async function () {
 
     // 3. Render Results
     // resultsView.render(model.state.search.results);
-    resultsView.render(model.getSearchResultsPage(1));
+    resultsView.render(model.getSearchResultsPage(4));
     // passing the data from the model state into the render function of the results view
 
     // 4. Render Initial Pagination Buttons
@@ -94,9 +94,14 @@ const controlSearchResults = async function () {
   }
 };
 
+const controlPagination = function (goToPage) {
+  console.log(goToPage);
+};
+
 // calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults); // for the search
+  paginationView.addHandlerClick(controlPagination);
 };
 init();
