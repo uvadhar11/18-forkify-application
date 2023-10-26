@@ -40,6 +40,9 @@ const controlRecipes = async function () {
     // 2) Rendering recipe, from the data we got before
     recipeView.render(model.state.recipe); // render method from recipeView.js. We are passing in the recipe from the state object in model.js. This is the recipe object we got from the api. Popular name for methods.
     // also possible: const recipeView = new recipeView(model.state.recipe)
+
+    // TEST
+    controlServings();
   } catch (err) {
     // when throw error in try, this stuff is executed so the alert will happen with the err from try block since throwing an error.
     // alert(err);
@@ -82,26 +85,43 @@ const controlSearchResults = async function () {
     // 2. Load Search Results
     await model.loadSearchResults(query); // need to search the QUERY, so we pass it in and we want it to wait for the stuff to show up so we have an await (while loading, there is a spinner)
 
-    // 3. Render Results
+    // 3. Render Results [INITIAL rendering for the buttons]
     // resultsView.render(model.state.search.results);
-    resultsView.render(model.getSearchResultsPage(4));
-    // passing the data from the model state into the render function of the results view
+    resultsView.render(model.getSearchResultsPage());
+    // passing the data from the model state into the render function of the results view. Default page number is number 1 in because that is the number we want to start at.
 
-    // 4. Render Initial Pagination Buttons
-    paginationView.render(model.state.search);
+    // 4. Render INITIAL Pagination Buttons
+    paginationView.render(model.state.search); // renders the buttons at the start and the control Pagination button will render the new buttons when we click on them.
   } catch (err) {
     console.log(err);
   }
 };
 
 const controlPagination = function (goToPage) {
-  console.log(goToPage);
+  // 1) Render NEW results
+  resultsView.render(model.getSearchResultsPage(goToPage)); // this get search results page method will get the argument for the new page we want to go to and then it will update the value in the page.
+  // render overrides the previous markup because the parent element is cleared in the render method.
+
+  // 4. Render NEW Pagination Buttons
+  paginationView.render(model.state.search);
+};
+
+// changing the servings value. These are basically the event handlers that we will pass in.
+const controlServings = function (newServings) {
+  // update the recipe servings (in the state - model handles the data/state so we have a method in the model to update the servings stuff)
+  model.updateServings(newServings); // want to keep this method robust, so we are not determining the newServings inside of this method.
+
+  // update the recipe view (the numbers for the ingredients) - we are just rendering the entire recipe view again so we don't have to select each individual element and change the value.
+  recipeView.render(model.state.recipe);
 };
 
 // calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  recipeView.addHandlerUpdateServings(controlServings); // event stuff for updating the servings.
   searchView.addHandlerSearch(controlSearchResults); // for the search
   paginationView.addHandlerClick(controlPagination);
+  // state.recipe is not defined yet because we are not taking into account the async nature of the application. These things above are just attaching the event handlers and the application doesn't have time to load everything yet.
+  controlServings();
 };
 init();

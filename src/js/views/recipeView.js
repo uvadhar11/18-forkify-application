@@ -21,6 +21,17 @@ class RecipeView extends View {
     );
   }
 
+  // handler for updating servings.
+  addHandlerUpdateServings(handler) {
+    // event delegation for the increase and decrease servings buttons
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings');
+      if (!btn) return; // guard clause if no btn exists
+      console.log(btn);
+      handler();
+    });
+  }
+
   // private method since render will be common for all the classes, the HTML will be different so we need a function to generate that.
   _generateMarkup() {
     return `
@@ -53,12 +64,16 @@ class RecipeView extends View {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to="${
+                this._data.servings - 1
+              }">
                 <svg>
                   <use href="${icons}#icon-minus-circle"></use>
                 </svg>
               </button>
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to="${
+                this._data.servings + 1
+              }">
                 <svg>
                   <use href="${icons}#icon-plus-circle"></use>
                 </svg>

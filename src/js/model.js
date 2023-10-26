@@ -70,3 +70,14 @@ export const getSearchResultsPage = function (page = state.search.page) {
 
   return state.search.results.slice(start, end);
 };
+
+// updates state of the servings
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    // Looping through each ingredient (an object) to update the quantity based on the servings we want. We want to update and not make a new object.
+    ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
+    // formula to calculate the new quantity = old quantity * new servings / old servings. Example: 2 * 8 / 4 = 4
+  });
+  // update state with the new servings number
+  state.recipe.servings = newServings;
+};

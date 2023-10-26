@@ -14,7 +14,6 @@ class PaginationView extends View {
 
       // get data from the button's data attribute called "goto" of what page to go to
       const goToPage = +btn.dataset.goto; // use the + to convert it to a number since its a string normally.
-      console.log(goToPage);
 
       handler(goToPage);
     });
