@@ -15,7 +15,7 @@ export default class View {
     this._data = data;
 
     // rendering onto the screen
-    const markup = this._generateMarkup(); // calling the private method to generate the markupz
+    const markup = this._generateMarkup(); // calling the private method to generate the markup
 
     // clearing the parent element html
     this._clear();

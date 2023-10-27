@@ -24,7 +24,6 @@ const controlRecipes = async function () {
   try {
     // getting hash from url - now we can load id based on the url
     const id = window.location.hash.slice(1); // cut the hash (first character) from id
-    console.log(id);
     // ^^^ this is an example of application logic [in controller] because we need this to get handle the application logic.
 
     // if no id, then return so there is no error - guard clause
@@ -40,9 +39,6 @@ const controlRecipes = async function () {
     // 2) Rendering recipe, from the data we got before
     recipeView.render(model.state.recipe); // render method from recipeView.js. We are passing in the recipe from the state object in model.js. This is the recipe object we got from the api. Popular name for methods.
     // also possible: const recipeView = new recipeView(model.state.recipe)
-
-    // TEST
-    controlServings();
   } catch (err) {
     // when throw error in try, this stuff is executed so the alert will happen with the err from try block since throwing an error.
     // alert(err);
@@ -108,6 +104,7 @@ const controlPagination = function (goToPage) {
 
 // changing the servings value. These are basically the event handlers that we will pass in.
 const controlServings = function (newServings) {
+  console.log(newServings);
   // update the recipe servings (in the state - model handles the data/state so we have a method in the model to update the servings stuff)
   model.updateServings(newServings); // want to keep this method robust, so we are not determining the newServings inside of this method.
 
@@ -121,7 +118,6 @@ const init = function () {
   recipeView.addHandlerUpdateServings(controlServings); // event stuff for updating the servings.
   searchView.addHandlerSearch(controlSearchResults); // for the search
   paginationView.addHandlerClick(controlPagination);
-  // state.recipe is not defined yet because we are not taking into account the async nature of the application. These things above are just attaching the event handlers and the application doesn't have time to load everything yet.
-  controlServings();
+  // state.recipe is not defined yet because we are not taking into account the async nature of the application. These things above are just attaching the event handlers and the application doesn't have time to load everything yet <- the application works fine since we are just attaching event listeners here and not calling the handler yet.
 };
 init();

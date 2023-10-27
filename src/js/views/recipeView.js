@@ -27,13 +27,14 @@ class RecipeView extends View {
     this._parentElement.addEventListener('click', function (e) {
       const btn = e.target.closest('.btn--update-servings');
       if (!btn) return; // guard clause if no btn exists
-      console.log(btn);
-      handler();
+      const { updateTo } = btn.dataset; // remember that data properties with dashes convert into camelcase. Remember to convert it to a number. Cannot do this: const {updateTo} = +btn.dataset because we can't convert the number with the plus sign like this. Prefer destructuring in case the object changes and stuff, so we can convert it to a number in the if statement.
+      if (+updateTo > 0) handler(+updateTo); // only call the handler to update the servings number. Remember to convert both places into a number.
     });
   }
 
   // private method since render will be common for all the classes, the HTML will be different so we need a function to generate that.
   _generateMarkup() {
+    console.log(this._data);
     return `
     <figure class="recipe__fig">
           <img src="${this._data.image}" alt="${
