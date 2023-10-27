@@ -109,7 +109,10 @@ const controlServings = function (newServings) {
   model.updateServings(newServings); // want to keep this method robust, so we are not determining the newServings inside of this method.
 
   // update the recipe view (the numbers for the ingredients) - we are just rendering the entire recipe view again so we don't have to select each individual element and change the value.
-  recipeView.render(model.state.recipe);
+  // recipeView.render(model.state.recipe);
+
+  // we can use the update method that we are gonna write so the image for the recipes isnt updated to make it faster and so the image doesn't flicker
+  recipeView.update(model.state.recipe);
 };
 
 // calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
