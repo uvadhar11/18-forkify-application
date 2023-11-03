@@ -32,6 +32,9 @@ const controlRecipes = async function () {
     recipeView.renderSpinner(); // calling the spinner function. This disappears when the content is loaded because this goes into the recipe container element, then when the content is loaded, that SAME container is emptied and the new code with the content is added to the same container, resulting in the spinner being gone.
     // WHY IT WORKS: Calling render spinner on recipe view works because the function uses the paretntElement variable that stores this.
 
+    // 0) Update results view to mark selected search result (basically the recipes that you are looking at need to be shaded in to imitate being selected on the sidebar)
+    resultsView.update(model.getSearchResultsPage()); // updating the selected recipe in the sidebar(if it has changed). As the hash changed, the recipe in the sidebar was selected accordingly. Using update and not render to not re-render all the images (causes flickering as they are loading in)
+
     // 1) Loading recipe
     // await will block the execution inside this async function. Becuase this is inside an async function, its not going to block the entire execution of the script.
     await model.loadRecipe(id); // calling the load recipe function from model.js. ASYNC FUNCTION SO RETURNS A PROMISE.
@@ -115,10 +118,17 @@ const controlServings = function (newServings) {
   recipeView.update(model.state.recipe);
 };
 
+// adding bookmarks controller
+const controlAddBookmark = function () {
+  model.addBookmark(model.state.recipe);
+  console.log(model.state.recipe);
+};
+
 // calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings); // event stuff for updating the servings.
+  recipeView.addHandlerAddBookmark(controlAddBookmark); // event stuff for adding a bookmark
   searchView.addHandlerSearch(controlSearchResults); // for the search
   paginationView.addHandlerClick(controlPagination);
   // state.recipe is not defined yet because we are not taking into account the async nature of the application. These things above are just attaching the event handlers and the application doesn't have time to load everything yet <- the application works fine since we are just attaching event listeners here and not calling the handler yet.

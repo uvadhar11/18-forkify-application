@@ -11,6 +11,7 @@ export const state = {
     page: 1,
     searchResultsPerPage: RESULTS_PER_PAGE, // number of search results that show up per page
   },
+  bookmarks: [], // array for the bookmarks
 };
 
 // function to fetch recipe data from API
@@ -55,6 +56,7 @@ export const loadSearchResults = async function (query) {
         image: recipe.image_url,
       };
     });
+    state.search.page = 1; // need to reset the page for the search results back to 1 because a bug when searching for something and then clicking on a recipe and then going back to the search results, the page number would be the same as the page number for the recipe we clicked on (page number needs to be reset after new searches).
   } catch (err) {
     console.error(`${err}💥💥💥💥`);
     throw err;
@@ -80,4 +82,12 @@ export const updateServings = function (newServings) {
   });
   // update state with the new servings number
   state.recipe.servings = newServings;
+};
+
+export const addBookmark = function (recipe) {
+  // add bookmark
+  state.bookmarks.push(recipe);
+
+  // mark current recipe as bookmark (if the current recipe id is the same one as the recipe that we are passing in (the one we are going to click on to look at next), then set this recipe as being bookmarked so the icon and stuff shows up)
+  if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
 };

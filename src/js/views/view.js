@@ -26,8 +26,9 @@ export default class View {
 
   // update method for updating text and the other elements
   update(data) {
-    if (!data || (Array.isArray(data) && data.length === 0))
-      return this.renderError(); // renders the error and we get the message in this.renderError automatically.
+    // if (!data || (Array.isArray(data) && data.length === 0))
+    //   return this.renderError(); // renders the error and we get the message in this.renderError automatically.
+    // removed this error because when updating the sidebar it doesn't render the new recipes and stuff because an empty array is returned.
 
     // stores data we get from calling the render method in the controller into this._data
     this._data = data;

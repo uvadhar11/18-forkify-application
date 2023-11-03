@@ -32,6 +32,15 @@ class RecipeView extends View {
     });
   }
 
+  addHandlerAddBookmark(handler) {
+    // doing event delegation again - putting the event on a parent element since we can't select it on an element that doesn't exist yet (btn might not have loaded yet)
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--bookmark');
+      if (!btn) return;
+      handler();
+    });
+  }
+
   // private method since render will be common for all the classes, the HTML will be different so we need a function to generate that.
   _generateMarkup() {
     console.log(this._data);
@@ -84,9 +93,9 @@ class RecipeView extends View {
 
           <div class="recipe__user-generated">
           </div>
-          <button class="btn--round">
+          <button class="btn--round btn--bookmark">
             <svg class="">
-              <use href="${icons}#icon-bookmark-fill"></use>
+              <use href="${icons}#icon-bookmark"></use>
             </svg>
           </button>
         </div>
