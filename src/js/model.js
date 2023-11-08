@@ -32,6 +32,12 @@ export const loadRecipe = async function (id) {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
     };
+    // since we load recipes from the api directly, we need to mark those that are bookmarked when loading the recipe so the bookmarked one stays
+    if (state.bookmarks.some(bookmark => bookmark.id === id)) {
+      // loops through the bookmarks array and if the id of the bookmarks equals the id of the recipe we are loading, then set the bookmarked property to true. The some method returns true (if statement is run) if ANY of the element of the array past the test.
+      state.recipe.bookmarked = true;
+    } else state.recipe.bookmarked = false;
+
     console.log(state.recipe);
   } catch (err) {
     // temp error handling
@@ -84,10 +90,40 @@ export const updateServings = function (newServings) {
   state.recipe.servings = newServings;
 };
 
+// function for handling local storage bookmark storing (persisting the bookmarks across page loads)
+const persistBookmarks = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
 export const addBookmark = function (recipe) {
   // add bookmark
   state.bookmarks.push(recipe);
 
   // mark current recipe as bookmark (if the current recipe id is the same one as the recipe that we are passing in (the one we are going to click on to look at next), then set this recipe as being bookmarked so the icon and stuff shows up)
   if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+
+  persistBookmarks();
 };
+
+// when we want to add stuff we get all the data and when we want to delete something we get only the data to delete
+export const deleteBookmark = function (id) {
+  // Delete bookmark
+  const index = state.bookmarks.findIndex(el => el.id === id); // find the index of the id we want to delete (id corresponding with the recipe)
+  state.bookmarks.splice(index, 1); // start at index and remove one element (mutates the array)
+
+  // Mark current recipe as NOT bookmarked
+  if (id === state.recipe.id) state.recipe.bookmarked = false;
+
+  persistBookmarks();
+};
+
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmarks = JSON.parse(storage); // parse converts the string back to an object
+};
+init();
+
+const clearBookmarks = function () {
+  localStorage.clear('bookmarks');
+};
+// clearBookmarks(); // clears the bookmarks in local storage

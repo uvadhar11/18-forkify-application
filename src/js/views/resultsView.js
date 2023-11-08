@@ -1,6 +1,8 @@
 // RESULTS VIEW IS FOR THE SHOWING THE SEARCH RESULTS (LIKE IN THE SIDEBAR). Code similar to some of the functionality in recipeView.js so we have a parent class we can inherit from (view.js)
 import View from './view';
 import icons from 'url:../../img/icons.svg'; // parcel 2 syntax for importing images
+import previewView from './previewView';
+
 class ResultsView extends View {
   // parent element
   _parentElement = document.querySelector('.results');
@@ -9,27 +11,7 @@ class ResultsView extends View {
 
   _generateMarkup() {
     // since the stuff we search can have multiple results, we need to loop through the array of search and then return a html element string for each element.
-    return this._data.map(this._generateMarkupPreview).join('');
-  }
-
-  _generateMarkupPreview(result) {
-    const id = window.location.hash.slice(1); // getting the current id for the recipe
-
-    return `
-    <li class="preview">
-      <a class="preview__link ${
-        result.id === id ? 'preview__link--active' : ''
-      }" href="#${result.id}">
-        <figure class="preview__fig">
-          <img src="${result.image}" alt="${result.title}" />
-        </figure>
-        <div class="preview__data">
-          <h4 class="preview__title">${result.title}</h4>
-          <p class="preview__publisher">${result.publisher}</p>
-        </div>
-      </a>
-    </li>
-    `;
+    return this._data.map(result => previewView.render(result, false)).join(''); // we want to call the render method instead of just calling a the preview view generate markup because we need the data setting stuff, etc.
   }
 }
 

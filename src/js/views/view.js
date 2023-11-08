@@ -6,7 +6,7 @@ export default class View {
   #data;
 
   // part of the public api, we can pass data into this method since we don't have a constructor.
-  render(data) {
+  render(data, render = true) {
     // if no data or if data is an empty array, then render message. Guard clause here.
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError(); // renders the error and we get the message in this.renderError automatically.
@@ -16,6 +16,9 @@ export default class View {
 
     // rendering onto the screen
     const markup = this._generateMarkup(); // calling the private method to generate the markup
+
+    // if render is false, then return this markup
+    if (!render) return markup;
 
     // clearing the parent element html
     this._clear();
@@ -42,7 +45,7 @@ export default class View {
 
     newElements.forEach((newEl, index) => {
       const curEl = curElements[index]; // getting the current element. We are looping thru the new elements and then getting the current element from the current elements array.
-      console.log(curEl, newEl.isEqualNode(curEl)); // isEqualNode compares the content between the nodes (don't have to be the same).Returns true or false.
+      // console.log(curEl, newEl.isEqualNode(curEl)); // isEqualNode compares the content between the nodes (don't have to be the same).Returns true or false.
 
       // if they aren't the same (are different), then change it AND we only want elements that are text. newEl is an element node and we need to get the firstChild node because it is text - for all elements that DON'T HAVE any text stuff, the first child will be null.
       if (
@@ -56,7 +59,7 @@ export default class View {
       // we also need to change the CHNAGED data attributes as well. Since with the +/- servings buttons we have a dataset attribute for the servings number to update to.
       // UPDATE CHANGED ATTRIBUTES
       if (!newEl.isEqualNode(curEl)) {
-        console.log(Array.from(newEl.attributes));
+        // console.log(Array.from(newEl.attributes));
         // convert attributes to an array so we can copy the changed attrbiutes into the current element (stuff displayed on the DOM)
         Array.from(newEl.attributes).forEach(attribute =>
           curEl.setAttribute(attribute.name, attribute.value)

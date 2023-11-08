@@ -3,6 +3,7 @@ import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView.js';
+import bookmarksView from './views/bookmarksView.js';
 
 import 'core-js/stable'; // don't need to save it anywhere, for plyfilling everything else (regenerator runtime does async/await)
 import 'regenerator-runtime/runtime'; // polyfilling async/await
@@ -35,6 +36,10 @@ const controlRecipes = async function () {
     // 0) Update results view to mark selected search result (basically the recipes that you are looking at need to be shaded in to imitate being selected on the sidebar)
     resultsView.update(model.getSearchResultsPage()); // updating the selected recipe in the sidebar(if it has changed). As the hash changed, the recipe in the sidebar was selected accordingly. Using update and not render to not re-render all the images (causes flickering as they are loading in)
 
+    // 1.5) Updating bookmarks view
+    // debugger; // debugging view that is handy for seeing the objects and everything that you have
+    bookmarksView.update(model.state.bookmarks); // highlighting the preview in the bookmarks tab if the recipe is bookmarked and is the current one.
+
     // 1) Loading recipe
     // await will block the execution inside this async function. Becuase this is inside an async function, its not going to block the entire execution of the script.
     await model.loadRecipe(id); // calling the load recipe function from model.js. ASYNC FUNCTION SO RETURNS A PROMISE.
@@ -45,7 +50,8 @@ const controlRecipes = async function () {
   } catch (err) {
     // when throw error in try, this stuff is executed so the alert will happen with the err from try block since throwing an error.
     // alert(err);
-    recipeView.renderError(`${err}`);
+    recipeView.renderError();
+    console.error(err);
   }
 };
 
@@ -118,14 +124,26 @@ const controlServings = function (newServings) {
   recipeView.update(model.state.recipe);
 };
 
-// adding bookmarks controller
+// adding bookmarks controller - this is run when we click the bookmark button
 const controlAddBookmark = function () {
-  model.addBookmark(model.state.recipe);
-  console.log(model.state.recipe);
+  // 1. Toggle bookmarks
+  if (!model.state.recipe.bookmarked) model.addBookmark(model.state.recipe);
+  else model.deleteBookmark(model.state.recipe.id);
+
+  // 2. Update recipe view
+  recipeView.update(model.state.recipe); // updating the recipe view so the bookmark icon changes. Passing in the current recipe.
+
+  // 3. Render bookmarks
+  bookmarksView.render(model.state.bookmarks); // we stored all thed ata about the bookmarks in the state so we can preview the stuff in this tab.
+};
+
+const controlBookmarks = function () {
+  bookmarksView.render(model.state.bookmarks);
 };
 
 // calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
 const init = function () {
+  bookmarksView.addHandlerRender(controlBookmarks); // event stuff for bookmarks
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings); // event stuff for updating the servings.
   recipeView.addHandlerAddBookmark(controlAddBookmark); // event stuff for adding a bookmark
