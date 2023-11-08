@@ -127,3 +127,8 @@ const clearBookmarks = function () {
   localStorage.clear('bookmarks');
 };
 // clearBookmarks(); // clears the bookmarks in local storage
+
+// uplaod recipe data - its API stuff so that stays in the model.
+export const uploadRecipe = async function (newRecipe) {
+  const ingredients = Object.entries(newRecipe).filter(entry => )
+};

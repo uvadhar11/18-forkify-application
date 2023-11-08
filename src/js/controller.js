@@ -4,6 +4,7 @@ import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView.js';
 import bookmarksView from './views/bookmarksView.js';
+import addRecipeView from './views/addRecipeView.js';
 
 import 'core-js/stable'; // don't need to save it anywhere, for plyfilling everything else (regenerator runtime does async/await)
 import 'regenerator-runtime/runtime'; // polyfilling async/await
@@ -141,6 +142,14 @@ const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
+// need to get the data to the model since api calls handled by the model
+const controlAddRecipe = function (newRecipe) {
+  console.log(newRecipe);
+
+  // upload the new recipe data
+  model.uploadRecipe(newRecipe);
+};
+
 // calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
 const init = function () {
   bookmarksView.addHandlerRender(controlBookmarks); // event stuff for bookmarks
@@ -150,5 +159,6 @@ const init = function () {
   searchView.addHandlerSearch(controlSearchResults); // for the search
   paginationView.addHandlerClick(controlPagination);
   // state.recipe is not defined yet because we are not taking into account the async nature of the application. These things above are just attaching the event handlers and the application doesn't have time to load everything yet <- the application works fine since we are just attaching event listeners here and not calling the handler yet.
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 };
 init();
