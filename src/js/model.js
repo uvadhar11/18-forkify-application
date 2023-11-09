@@ -1,7 +1,8 @@
 // MODULE WHERE WE WRITE THE CODE FOR OUR ENTIRE MODEL
 // exporting state [object] so controller can use it. Live connection between exports and imports. When this state object gets updated by the load recipe function, it will be automatically updated in the controller because of the live connection between imports and exports.
-import { API_URL, RESULTS_PER_PAGE } from './config.js'; // importing the api url from config.js. Can import all with *
-import { getJSON } from './helpers.js';
+import { API_URL, KEY, RESULTS_PER_PAGE } from './config.js'; // importing the api url from config.js. Can import all with *
+// import { getJSON, sendJSON } from './helpers.js';
+import { AJAX } from './helpers.js';
 
 export const state = {
   recipe: {},
@@ -14,24 +15,30 @@ export const state = {
   bookmarks: [], // array for the bookmarks
 };
 
+const createRecipeObject = function (data) {
+  const { recipe } = data.data; // getting recipe from data.data with destructuring and stuff.
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    publisher: recipe.publisher,
+    sourceUrl: recipe.source_url,
+    image: recipe.image_url,
+    servings: +recipe.servings,
+    cookingTime: +recipe.cooking_time,
+    ingredients: recipe.ingredients,
+    ...(recipe.key && { key: recipe.key }), // doing short circuiting so we can add key if the key already exists because sometimes the key doesn't exist since user created recipes have keys and others don't. ADDING THIS TO THE OBJECT.
+  };
+};
+
 // function to fetch recipe data from API
 export const loadRecipe = async function (id) {
   try {
     // calling the getJSON helper function
-    const data = await getJSON(`${API_URL}${id}`);
+    const data = await AJAX(`${API_URL}${id}?key=${KEY}`); // we are adding the key and stuff in the API CALL NOT IN THE URL DISPLAYED ON THE SCREEN because this is a good practice in the real world becuase it can be used to authentication and other pages, etc.
 
     const { recipe } = data.data; // getting recipe from data.data
     // making a new object from the json info since sometimes has underscores which is unusual for js
-    state.recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      sourceUrl: recipe.source_url,
-      image: recipe.image_url,
-      servings: recipe.servings,
-      cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-    };
+    state.recipe = createRecipeObject(data);
     // since we load recipes from the api directly, we need to mark those that are bookmarked when loading the recipe so the bookmarked one stays
     if (state.bookmarks.some(bookmark => bookmark.id === id)) {
       // loops through the bookmarks array and if the id of the bookmarks equals the id of the recipe we are loading, then set the bookmarked property to true. The some method returns true (if statement is run) if ANY of the element of the array past the test.
@@ -50,7 +57,9 @@ export const loadSearchResults = async function (query) {
   try {
     state.search.query = query; // storing the query in the state object in case we need it.
 
-    const data = await getJSON(`${API_URL}?search=${query}`); // get json is a helper function that makes the api call and returns the json data
+    const data = await AJAX(`${API_URL}?search=${query}&key=${KEY}`); // get json is a helper function that makes the api call and returns the json data
+    // adding the key so we can show an icon on the recipes that are created by the user
+    // the recipes are also linked to API keys so we won't see like the ones Jonas uploads for example.
     console.log(data);
     // data.data.recipes is where our searched recipes are and here we are making our object from that and then storing it in the state
     state.search.results = data.data.recipes.map(recipe => {
@@ -58,8 +67,9 @@ export const loadSearchResults = async function (query) {
         id: recipe.id,
         title: recipe.title,
         publisher: recipe.publisher,
-        sourceUrl: recipe.source_url,
+        // sourceUrl: recipe.source_url,
         image: recipe.image_url,
+        ...(recipe.key && { key: recipe.key }),
       };
     });
     state.search.page = 1; // need to reset the page for the search results back to 1 because a bug when searching for something and then clicking on a recipe and then going back to the search results, the page number would be the same as the page number for the recipe we clicked on (page number needs to be reset after new searches).
@@ -130,5 +140,43 @@ const clearBookmarks = function () {
 
 // uplaod recipe data - its API stuff so that stays in the model.
 export const uploadRecipe = async function (newRecipe) {
-  const ingredients = Object.entries(newRecipe).filter(entry => )
+  try {
+    const ingredients = Object.entries(newRecipe)
+      .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
+      .map(ing => {
+        // const ingArr = ing[1].replaceAll(' ', '').split(',');
+        const ingArr = ing[1].split(',').map(el => el.trim()); // trim removes the whitespace from the beginning and end of the string (not in the middle) so the white spaces in ingredients won't get messed up like with tomato sauce
+
+        // since we are splitting the inputs in 3 parts, if there aren't 3 parts, then we throw an error since wrong format.
+        if (ingArr.length !== 3)
+          throw new Error(
+            'Wrong ingredient format! Please use the correct format.'
+          );
+        const [quantity, unit, description] = ingArr;
+
+        return { quantity: quantity ? +quantity : null, unit, description };
+      });
+    // filtering out the ingredients to make sure they have ingredients and more than one ingredient then mapping through them to format them properly so we can use them.
+
+    const recipe = {
+      title: newRecipe.title,
+      source_url: newRecipe.sourceUrl,
+      image_url: newRecipe.image,
+      publisher: newRecipe.publisher,
+      cooking_time: +newRecipe.cookingTime,
+      servings: +newRecipe.servings,
+      ingredients,
+    };
+    console.log(recipe);
+
+    // sending the data
+    const data = await AJAX(`${API_URL}?key=${KEY}`, recipe); // calling the send json function - the api url and the data you want to send.
+    // console.log(data);
+    state.recipe = createRecipeObject(data); // creating the recipe object from the data we get back from the api`
+
+    // add a bookmark to the new recipe the user just made
+    addBookmark(state.recipe);
+  } catch (err) {
+    throw err; // in async function so promise is returned. So error will say uncaught in promise, if there is an error in the promise stuff so that's why we need a try catch block.
+  }
 };

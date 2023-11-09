@@ -1,4 +1,5 @@
 import * as model from './model.js'; // imports everything in the model js file as an object called model
+import { MODAL_CLOSE_SEC } from './config.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
@@ -143,11 +144,39 @@ const controlBookmarks = function () {
 };
 
 // need to get the data to the model since api calls handled by the model
-const controlAddRecipe = function (newRecipe) {
-  console.log(newRecipe);
+const controlAddRecipe = async function (newRecipe) {
+  // console.log(newRecipe);
+  // needed to make this function async so it can handle the error from the uploadRecipe function in model.js We want to handle the error here because we want to render the error in the addRecipeView.js file - since controller connects model and DOM, can't do model to DOM directly.
+  try {
+    // show loading spinner so user knows that we are doing something (before we are sending the data)
+    addRecipeView.renderSpinner();
 
-  // upload the new recipe data
-  model.uploadRecipe(newRecipe);
+    // upload the new recipe data
+    await model.uploadRecipe(newRecipe);
+    console.log(model.state.recipe);
+
+    // render recipe in recipe view
+    recipeView.render(model.state.recipe);
+
+    // render success message
+    addRecipeView.renderMessage(); // calling the render message which renders the message from the message instance variable in addRecipeView.js
+
+    // render the bookmark view (upadting the bookmark view with the new recipe). WE ARE USING RENDER AND NOT UPDATE BECAUSE we are adding a NEW element so we use render for that, upadte is only for changes in elements that already exist.
+    bookmarksView.render(model.state.bookmarks);
+
+    // change ID in url to the new recipe
+    window.history.pushState(null, '', `#${model.state.recipe.id}`); // history api of the browser. On this object, we can call the pushState method which allows us to change the url WITHOUT RELOADING THE PAGE. args: state, title (of the page probably), and this is the actual url. We can do lots of cool things with this like going forward and back
+    // window.history.back(); // for ex we can go back to the prev page with this
+
+    // close form window (the upload form window)
+    setTimeout(function () {
+      addRecipeView.toggleWindow();
+    }, MODAL_CLOSE_SEC * 1000); // need to multiply by 1000 because setTimeout is in milliseconds and we want seconds. Clalls the toggle window function after 2.5 seconds, so we can put a success message after the recipe was created.
+  } catch (err) {
+    console.error('💥💥', err);
+    addRecipeView.renderError(err.message);
+  }
+  location.reload(); // reloads the current page so that the form html is not destroyed, so adding more recipes at once doesn't break.
 };
 
 // calling the init function so we can get the event listeners going in the recipe view and then we pass the handler function into the addHandlerRender function in recipeView.js. Used for implementing the publisher-subscriber pattern.
