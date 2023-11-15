@@ -5,6 +5,17 @@ import icons from 'url:../../img/icons.svg'; // parcel 2 syntax for importing im
 export default class View {
   #data;
 
+  // JS DOCS - website and built into vs code for documentation. An example of this is shown below and the documentation you make will show up when you hover over the function in vs code.
+  /**
+   * Render the recieved object to the DOM
+   * @param {Object | Object[]} data The data to be rendered (e.g. recipe)
+   * @param {boolean} [render=true] If false, create markup string instead of rendering to the DOM
+   * @returns {undefined | string} A markup string is returned if render=false
+   * @this {Object} View instance
+   * @author Umang Vadhar
+   * @todo Finish implementation (example)
+   */
+
   // part of the public api, we can pass data into this method since we don't have a constructor.
   render(data, render = true) {
     // if no data or if data is an empty array, then render message. Guard clause here.

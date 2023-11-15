@@ -2,7 +2,8 @@
 import icons from 'url:../../img/icons.svg'; // for static assets (non programming files like video, img, sound) we need to add url:PATH
 // need to import images since when the build is done, the image reference in the html goes to a different area and not the one in the dist folder. So see imports and comments above.
 import View from './view';
-import { Fraction } from 'fractional'; // npm package for converting decimals to fractions. Don't have to specify a path for packages we get from npm and we have to get what they export, which for this library it is Fraction. In the docs we can see they are using common js stuff and using require. Using destructuring to get the Fraction class from the object that is exported since theres 2.
+import fracty from 'fracty'; // npm package for converting decimals to fractions. Don't have to specify a path for packages we get from npm and we have to get what they export, which for this library it is Fraction. In the docs we can see they are using common js stuff and using require. Using destructuring to get the Fraction class from the object that is exported since theres 2.
+// used Fraction class before but having an error with getting it to work on netlify after deployment because it says it can't find the module declaration
 
 // view is going to be a class because we are going to have a parent class called view that all views should inherit - easy to implement this with inheritance. We want some private properties for the views as well which classes will help us with.
 class RecipeView extends View {
@@ -145,7 +146,7 @@ class RecipeView extends View {
           <use href="${icons}#icon-check"></use>
         </svg>
         <div class="recipe__quantity">${
-          ing.quantity ? new Fraction(ing.quantity).toString() : ''
+          ing.quantity ? fracty(ing.quantity).toString() : ''
         }</div>
         <div class="recipe__description">
           <span class="recipe__unit">${ing.unit}</span>
